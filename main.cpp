@@ -1,4 +1,6 @@
+//#include <glad/glad.h>  // If include GLAD here, then crash
 #include <GLFW/glfw3.h>
+//#include <glad/glad.h>  // If include GLAD here, then error
 
 int main(void)
 {
