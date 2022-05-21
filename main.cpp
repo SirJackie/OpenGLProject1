@@ -91,8 +91,6 @@ int main() {
 	int success;
 	char infoLog[512];
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-	// If not Succeeded, then Print the Error Message
 	if (!success)
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
@@ -102,12 +100,25 @@ int main() {
 
 	// Check if Fragment Shader Compiled Successfully
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-	// If not Succeeded, then Print the Error Message
 	if (!success)
 	{
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
 		cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" <<
+			infoLog << endl;
+	}
+
+	// Create a Shader Program to Link the Vertex and Fragment Shader together
+	unsigned int shaderProgram;
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	// Check if Shader Program Compiled Successfully
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" <<
 			infoLog << endl;
 	}
 
