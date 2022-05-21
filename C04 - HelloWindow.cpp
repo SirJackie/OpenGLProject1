@@ -12,6 +12,13 @@ void processInput(GLFWwindow* window);
 #define ScreenWidth  (800 * ScreenFactor)
 #define ScreenHeight (600 * ScreenFactor)
 
+float vertices[] = {
+	-0.5f, -0.5f,  0.0f,
+	 0.5f, -0.5f,  0.0f,
+	 0.0f,  0.5f,  0.0f
+};
+
+
 int main() {
 
 	// Init GLFW
@@ -44,6 +51,15 @@ int main() {
 
 	// Set the Window Resizing Callback
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	// Generate Vertex Buffer Object
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+
+	// Send Vertices to the Vertex Buffer Object
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window))
