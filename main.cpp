@@ -52,6 +52,7 @@ int main() {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Init GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -62,9 +63,6 @@ int main() {
 
 	// Set the Viewport
 	glViewport(0, 0, ScreenWidth, ScreenHeight);
-
-	// Set the Window Resizing Callback
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Create and Compile the Vertex Shader
 	unsigned int vertexShader;
@@ -128,10 +126,17 @@ int main() {
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 
+	// Binding
+	// 1.VAOs
+	// 2.VBOs
+	// 3.Vertex Attributes
+
+	// Bind VAO
+	glBindVertexArray(VAO);
+
 	// Send Vertices to the Vertex Buffer Object
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Tell OpenGL how our vertex buffer (vertices[]) was arranged
 	glVertexAttribPointer(
