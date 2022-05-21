@@ -29,7 +29,7 @@ int main() {
 
 	// Create a Window
 	GLFWwindow* window = glfwCreateWindow(
-		ScreenWidth, ScreenHeight, "LearnOpenGL_C04", NULL, NULL
+		ScreenWidth, ScreenHeight, "LearnOpenGL_C05", NULL, NULL
 	);
 	if (window == NULL)
 	{
