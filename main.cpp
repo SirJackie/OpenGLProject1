@@ -122,6 +122,28 @@ int main() {
 			infoLog << endl;
 	}
 
+	// Use the Shader Program
+	glUseProgram(shaderProgram);
+
+	// Delete the Compiled Shaders since they are already Linked together
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	// Tell OpenGL how our vertex buffer (vertices[]) was arranged
+	glVertexAttribPointer(
+		0,                  // Pass the Vertices to Shader at the (location = 0)
+		3,                  // Specifies the size of the vertex attribute (vec3)
+		GL_FLOAT,           // Specifies the data type (which is float)
+		GL_FALSE,           // Specifies if we want the int data to be normalized
+		3 * sizeof(float),  // Specifies stride, which is the space
+							//     between consecutive vertex attributes.
+		(void*)0            // Specifies the offset (where the position begins)
+							//     Type is void*, so the cast is needed.
+	);
+
+	// Allow Vertex Shader to Access the GPU Data
+	glEnableVertexAttribArray(0);
+
 	// Render Loop
 	while (!glfwWindowShouldClose(window))
 	{
