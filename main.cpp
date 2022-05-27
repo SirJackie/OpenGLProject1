@@ -11,6 +11,7 @@ void processInput(GLFWwindow* window);
 #define ScreenFactor (2)
 #define ScreenWidth  (800 * ScreenFactor)
 #define ScreenHeight (600 * ScreenFactor)
+#define OnlyRenderLines false
 
 float vertices[] = {
 	-0.5f, -0.5f,  0.0f,
@@ -57,7 +58,7 @@ int main() {
 	// Init GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		cout << "Failed to initialize GLAD" << endl;
 		return -1;
 	}
 
@@ -70,12 +71,6 @@ int main() {
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 
-	// Create and Compile the Fragment Shader
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
 	// Check if Vertex Shader Compiled Successfully
 	int success;
 	char infoLog[512];
@@ -86,6 +81,12 @@ int main() {
 		cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" <<
 			infoLog << endl;
 	}
+
+	// Create and Compile the Fragment Shader
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
 
 	// Check if Fragment Shader Compiled Successfully
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -107,7 +108,7 @@ int main() {
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" <<
+		cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" <<
 			infoLog << endl;
 	}
 
@@ -126,16 +127,19 @@ int main() {
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 
-	// Binding
-	// 1.VAOs
+	// Bind:
+	// 1.VAOs (Which stores the Vertex Arrtibute)
 	// 2.VBOs
-	// 3.Vertex Attributes
+	// 3.Set VBO Data
+	// 3.Set Vertex Attributes Data
 
 	// Bind VAO
 	glBindVertexArray(VAO);
 
-	// Send Vertices to the Vertex Buffer Object
+	// Bind VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	// Send Vertices to the VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	// Tell OpenGL how our vertex buffer (vertices[]) was arranged
@@ -150,8 +154,25 @@ int main() {
 							//     Type is void*, so the cast is needed.
 	);
 
-	// Allow Vertex Shader to Access the GPU Data
+	// Allow Vertex Shader to Access Vertex Attribute at (location = 0)
 	glEnableVertexAttribArray(0);
+
+	// Unbind the VBO is allowed,
+	// since the VAO ONLY stores Vertex Attribute, NOT the VBO,
+	// And the Vertex Attribute includes the VBO,
+	// So Unbind the VBO won't make any impact on the VAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Unbind the VAO
+	glBindVertexArray(0);
+
+	// Set the rendering mode
+	if (OnlyRenderLines) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window))
@@ -168,6 +189,11 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	// De-allocate Resources
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteProgram(shaderProgram);
 
 	// Clean Up after the Window is Closed
 	glfwTerminate();
